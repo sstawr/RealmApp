@@ -44,8 +44,9 @@ final class TaskListViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskListCell", for: indexPath)
         var content = cell.defaultContentConfiguration()
         let taskList = taskLists[indexPath.row]
+        let currentTasksCount = taskList.tasks.filter("isComplete = false").count.formatted()
         content.text = taskList.title
-        content.secondaryText = taskList.tasks.count.formatted()
+        content.secondaryText = currentTasksCount
         cell.contentConfiguration = content
         return cell
     }
@@ -78,6 +79,7 @@ final class TaskListViewController: UITableViewController {
         return UISwipeActionsConfiguration(actions: [doneAction, editAction, deleteAction])
     }
     
+    
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let indexPath = tableView.indexPathForSelectedRow else { return }
@@ -87,6 +89,13 @@ final class TaskListViewController: UITableViewController {
     }
 
     @IBAction func sortingList(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0 {
+            taskLists = taskLists.sorted(byKeyPath: "date", ascending: true)
+            tableView.reloadData()
+        } else {
+            taskLists = taskLists.sorted(byKeyPath: "title", ascending: true)
+            tableView.reloadData()
+        }
     }
     
     @objc private func addButtonPressed() {
